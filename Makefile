@@ -7,7 +7,7 @@ BITSOFS=
 libprefix = ${exec_prefix}/lib$(BITSOFS)
 DESTDIR=
 OBJSUFFIX=$(BITSOFS).o
-OBJECTS=shadow$(OBJSUFFIX) passwd$(OBJSUFFIX) group$(OBJSUFFIX) redis_client$(OBJSUFFIX)  base64$(OBJSUFFIX) 
+OBJECTS=shadow$(OBJSUFFIX) passwd$(OBJSUFFIX) group$(OBJSUFFIX)  redis_client$(OBJSUFFIX)
 SHARED_OBJECT = libnss_redis$(BITSOFS).so.2
 INSTALL_NAME = libnss_redis.so.2
 # This only works sometimes, give manually when needed:

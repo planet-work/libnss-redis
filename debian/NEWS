@@ -1,6 +1,6 @@
-libnss-consul (0.3-1) unstable; urgency=low
+libnss-redis (0.3-1) unstable; urgency=low
 
-  Since version 0.3 libnss-consul adds an exception for users
+  Since version 0.3 libnss-redis adds an exception for users
   with group id 100, which are now allowed even though 100 is less
   than the built-in MINGID of 500.
 
@@ -9,7 +9,7 @@ libnss-consul (0.3-1) unstable; urgency=low
   useful for more people.
 
   If you want to continue to exclude users with group 100, you will
-  have to recompile libnss-consul, as the global usage of nss
+  have to recompile libnss-redis, as the global usage of nss
   modules makes config files to expensive. (just removing the USERSGID
   line from s_config.h should suffice).
 

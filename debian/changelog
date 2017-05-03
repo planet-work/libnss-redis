@@ -1,10 +1,10 @@
-libnss-consul (0.1-1) UNRELEASED; urgency=medium
+libnss-redis (0.1-1) UNRELEASED; urgency=medium
 
   * Bugfix 
 
  -- Frédéric VANNIÈRE <f.vanniere@planet-work.com>  Wed, 16 Mar 2016 11:02:30 +0100
 
-libnss-consul (0.1-0) stable; urgency=low
+libnss-redis (0.1-0) stable; urgency=low
 
   * Initial version
 
