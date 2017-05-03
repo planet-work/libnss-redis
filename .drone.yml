@@ -1,0 +1,44 @@
+clone:
+  tags: true
+
+build:
+  bundle:
+    image: dock.pw.fr/pw/debpkg:$$DEBIAN_VERSION
+    commands:
+      - apt-get install -y libhiredis-dev
+      - dpkg-buildpackage -b
+      - fakeroot debian/rules clean
+  test:
+    image: dock.pw.fr/pw/wgap-probe:jessie
+    privileged: false
+    commands:
+      - echo "****** Tests fonctionnels *****"
+      - uname -a 
+      - apt-get update >/dev/null
+      - apt-get install libhiredis
+      - dpkg -c ../libnss*deb
+      - sleep 2
+
+publish:
+  sftp:
+    host: pippin.planet-work.net
+    username: pkg
+    files:
+      - ../*.deb
+    destination_path: incoming/libnss-redis/$$DEBIAN_VERSION
+    when:
+      event: tag
+  ssh:
+    host: pippin.planet-work.net
+    user: pkg
+    commands:
+      - aptly repo add debian-$$DEBIAN_VERSION incoming/libnss-redis/$$DEBIAN_VERSION && aptly publish update $$DEBIAN_VERSION debian 
+    when:
+      event: tag
+
+matrix:
+  PYTHON_VERSION:
+    - 3.4
+  DEBIAN_VERSION:
+    - jessie
+
