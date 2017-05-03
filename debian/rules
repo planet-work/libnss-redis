@@ -1,0 +1,72 @@
+#!/usr/bin/make -f
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+DEB_HOST_GNU_TYPE := $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_HOST_ARCH := $(shell dpkg-architecture -qDEB_HOST_ARCH)
+
+CFLAGS := $(shell dpkg-buildflags --get CFLAGS)
+CPPFLAGS := $(shell dpkg-buildflags --get CPPFLAGS)
+LDFLAGS := $(shell dpkg-buildflags --get LDFLAGS)
+
+CFLAGS += -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wpointer-arith
+# -Wl,--no-allow-shlib-undefined not possible due to 625712
+# (and libc no longer pulling in ld-linux.so in directly)
+LDFLAGS += -Wl,-z,defs
+
+ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+        MAKEFLAGS += -j$(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+endif
+build-arch: build-arch-stamp $(foreach bits,$(ALSODO),build-arch-$(bits)-stamp)
+build-indep:
+build: build-arch
+
+build-arch-stamp:
+	dh_testdir
+	$(MAKE) CC="$(DEB_HOST_GNU_TYPE)-gcc" CFLAGS='$(CFLAGS)' CPPFLAGS='$(CPPFLAGS)' LDFLAGS='$(LDFLAGS)'
+	touch build-arch-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-arch*-stamp
+	$(MAKE) clean
+	rm -f *.o *.so *.so.*
+	dh_clean
+
+# Build architecture-independent files here.
+binary-indep: build-indep
+# We have nothing to do
+
+LIBNAME = libnss_redis.so.2
+
+# Build architecture-dependent files here.
+binary-arch: build-arch
+	dh_testdir
+	dh_testroot
+	dh_prep
+	dh_installdirs
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/libnss-redis
+	for also in $(ALSODO) ; do \
+		$(MAKE) BITSOFS=$${also} install DESTDIR=$(CURDIR)/debian/libnss-redis ; \
+	done
+	dh_installchangelogs
+	dh_installdocs
+	dh_link
+	dh_strip
+	[ "$(ALSODO)" = "" ] || \
+	  dpkg-shlibdeps -Tdebian/libnss-redis.substvars \
+	    -palternatelibs -dSuggests \
+	    $(foreach bits,$(ALSODO), debian/libnss-redis/usr/lib$(bits)/$(LIBNAME))
+	dh_shlibdeps $(foreach bits,$(ALSODO), -X/usr/lib$(bits)/$(LIBNAME))
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build build-arch build-indep clean binary-indep binary-arch binary
+
