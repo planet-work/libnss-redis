@@ -12,7 +12,7 @@ pipeline:
       - make
       - make test
       - valgrind ./test
-      - debuild -uc -b
+      #- debuild -uc -b
 
   pkg:
     image: appleboy/drone-scp
