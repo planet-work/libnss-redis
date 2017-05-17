@@ -15,22 +15,22 @@ pipeline:
           - valgrind ./test
           - debuild -uc -b
 
-  publish:
-    sftp:
-      host: pippin.planet-work.net
-      username: pkg
-      files:
-        - ../*.deb
-      destination_path: incoming/libnss-redis/jessie
-      when:
+  pkg:
+    image: appleboy/drone-scp
+    host: pippin.planet-work.net
+    username: pkg
+    source: ../*.deb
+    target: incoming/libnss-redis/jessie
+    when:
         event: tag
-    ssh:
-      host: pippin.planet-work.net
-      user: pkg
-      commands:
-        - aptly repo add debian-jessie incoming/libnss-redis/jessie && aptly publish update jessie debian 
-      when:
-        event: tag
+  aptly:
+    image: appleboy/drone-ssh
+    host: pippin.planet-work.net
+    user: pkg
+    script:
+      - aptly repo add debian-jessie incoming/libnss-redis/jessie && aptly publish update jessie debian 
+    when:
+      event: tag
 
 matrix:
   DEBIAN_VERSION:
