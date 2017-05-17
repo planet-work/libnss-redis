@@ -5,7 +5,7 @@ pipeline:
 
   build:
     bundle:
-      image: dock.pw.fr/pw/debpkg:$$DEBIAN_VERSION
+      image: dock.pw.fr/pw/debpkg:jessie
       commands:
           - echo "deb http://ftp.fr.debian.org/debian/ jessie-backports main" > /etc/apt/sources.list.d/backports.list
           - apt-get update >/dev/null
@@ -21,14 +21,14 @@ pipeline:
       username: pkg
       files:
         - ../*.deb
-      destination_path: incoming/libnss-redis/$$DEBIAN_VERSION
+      destination_path: incoming/libnss-redis/jessie
       when:
         event: tag
     ssh:
       host: pippin.planet-work.net
       user: pkg
       commands:
-        - aptly repo add debian-$$DEBIAN_VERSION incoming/libnss-redis/$$DEBIAN_VERSION && aptly publish update $$DEBIAN_VERSION debian 
+        - aptly repo add debian-jessie incoming/libnss-redis/jessie && aptly publish update jessie debian 
       when:
         event: tag
 
