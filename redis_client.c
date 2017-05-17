@@ -36,10 +36,10 @@ int redis_lookup(const char *service, const char *tenant, const char *name, char
 
 
 #if DEBUG
-    printf( "@ %s::(in) cmd=GET %s/%s/%s\n", __FUNCTION__, "USER",tenant,name ) ;
+    printf( "@ %s::(in) cmd=GET %s/%s/%s\n", __FUNCTION__, service, tenant, name ) ;
 #endif 
 
-    reply = redisCommand(c,"GET %s/%s/%s","USER",tenant,name);
+    reply = redisCommand(c,"GET %s/%s/%s", service, tenant, name);
 #if DEBUG
     printf("@ %s::(out) value=%s\n", __FUNCTION__, reply->str);
 #endif

@@ -7,7 +7,7 @@ BITSOFS=
 libprefix = ${exec_prefix}/lib$(BITSOFS)
 DESTDIR=
 OBJSUFFIX=$(BITSOFS).o
-OBJECTS=shadow$(OBJSUFFIX) passwd$(OBJSUFFIX) group$(OBJSUFFIX) redis_client$(OBJSUFFIX) test$(OBJSUFFIX)
+OBJECTS=shadow$(OBJSUFFIX) passwd$(OBJSUFFIX) group$(OBJSUFFIX) redis_client$(OBJSUFFIX) 
 SHARED_OBJECT = libnss_redis$(BITSOFS).so.1
 INSTALL_NAME = libnss_redis.so.1
 # This only works sometimes, give manually when needed:
@@ -32,7 +32,7 @@ install:
 	install -m644 $(SHARED_OBJECT) $(DESTDIR)$(libprefix)/$(INSTALL_NAME)
 
 clean:
-	rm -f $(OBJECTS)
+	rm -f $(OBJECTS) test.o
 	rm -f $(SHARED_OBJECT)
 	rm -f a.out
 	rm -f test
@@ -46,7 +46,7 @@ dist: Makefile README s_config.h $(patsubst %$(OBJSUFFIX),%.c,$(OBJECTS))
 	rm -r libnss-redis-$(VERSION) 
 
 test: test.o redis_client.o
-	$(CC) $(CFLAGS) $(LDFLAGS) -o test redis_client$(OBJSUFFIX) test$(OBJSUFFIX) $(LIBS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o test redis_client$(OBJSUFFIX) test$(OBJSUFFIX) passwd$(OBJSUFFIX) group$(OBJSUFFIX) $(LIBS)
 
 
 .PHONY: all

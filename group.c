@@ -29,6 +29,7 @@ Based on parts of the GNU C Library:
 #include <grp.h>
 
 #include "s_config.h"
+#include "redis_client.h"
 
 enum nss_status _nss_redis_setgrent(void);
 enum nss_status _nss_redis_endgrent(void);
@@ -95,57 +96,48 @@ static inline char **parse_list(char *line, char *data, size_t datalen, int *err
 	return list;
 }
 
-int redis_lookup(const char *service,const char *name, char *addr);
-
 static inline enum nss_status g_search(const char *name, const gid_t gid, struct group *gr, int *errnop, char *buffer, size_t buflen) {
-    char *gr_data = malloc(1000); 
+
+	char *gr_data = buffer;
+	char *token;
+	const char *delim = ":";
+	char *tenant = getenv("TENANT");
+
+	if (tenant == NULL)
+		return NSS_STATUS_UNAVAIL; 
 
 	if (gid != 0 && gid < MINGID) {
 		*errnop = ENOENT;
 		return NSS_STATUS_NOTFOUND;
 	}
     if (gid == 0) {
-        redis_lookup("group",name,gr_data);
+        redis_lookup("GROUP", tenant, name, gr_data);
     } else {
         char *_name = malloc(100);
         sprintf(_name, "%d", gid);
-        redis_lookup("group",_name,gr_data); 
+        redis_lookup("GROUP", tenant, _name, gr_data); 
+		free(_name);
     }
        
-    return NSS_STATUS_UNAVAIL;
-    /*
-    if (jpwd == 0) {
-        free(gr_data);
-        return NSS_STATUS_UNAVAIL;
-    }
-    
 	*errnop = 0;
-    json_object *jobj = malloc(1000); 
 
-    json_object_object_get_ex(jpwd, "name",&jobj);
-	gr->gr_name = (char*) malloc(strlen(json_object_get_string(jobj))+1);
-	strcpy(gr->gr_name,json_object_get_string(jobj));
+	// gr_name : string
+    token = strtok(gr_data, delim);
+	gr->gr_name = (char*) malloc(strlen(token)+1);
+    strncpy(gr->gr_name, token, strlen(token)+1);
 
-    json_object_object_get_ex(jpwd, "passwd",&jobj);
-	gr->gr_passwd = (char*) malloc(strlen(json_object_get_string(jobj))+1);
-	strcpy(gr->gr_passwd,json_object_get_string(jobj));
+	// gr_passwd : string
+    token = strtok(NULL, delim);
+	gr->gr_passwd = (char*) malloc(strlen(token)+1);
+    strncpy(gr->gr_passwd, token, strlen(token)+1);
 
-    json_object_object_get_ex(jpwd, "gid",&jobj);
-	gr->gr_gid = json_object_get_int(jobj);
-    
-    json_object_object_get_ex(jpwd, "members",&jobj);
-    */
-    /*
-	int i;
-    json_object *jmem;
-	char **t_mem;
-    for (i=0; i < json_object_array_length(jobj) ; i++) {
-        jmem = json_object_array_get_idx(jobj, i);     
-    }
+	//  gr_gid : int
+    token = strtok(NULL, delim);
+	gr->gr_gid = atoi(token);
+
+	// gr_mem : ???
 	gr->gr_mem = NULL;
-	*/
 
-	//free(jobj);
 	return NSS_STATUS_SUCCESS;
 }
 

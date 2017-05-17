@@ -8,7 +8,13 @@ pipeline:
     commands:
       - echo "deb http://ftp.fr.debian.org/debian/ jessie-backports main" > /etc/apt/sources.list.d/backports.list
       - apt-get update >/dev/null
-      - apt-get install -y -t jessie-backports cmake libhiredis-dev libhiredis-dbg valgrind
+      - apt-get install -y -t jessie-backports cmake libhiredis-dev libhiredis-dbg valgrind redis-server  
+      - sed -i -e "s/6379/6380/" /etc/redis/redis.conf
+      - systemctl restart redis-server
+      - redis-cli -p 6380 SET USER/tenant1/testuser "testuser:x:2000:1002:Web User:/home/testuser:/bin/false"
+      - redis-cli -p 6380 SET USER/tenant1/2000 "testuser:x:2000:1002:Web User:/home/testuser:/bin/false"
+      - redis-cli -p 6380 SET GROUP/tenant1/webusers "webusers:x:1002:www-data"
+      - redis-cli -p 6380 SET GROUP/tenant1/1002 "webusers:x:1002:www-data"
       - make
       - make test
       - valgrind ./test
