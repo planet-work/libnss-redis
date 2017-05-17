@@ -27,7 +27,6 @@ Based on parts of the GNU C Library:
 #include <errno.h>
 #include <ctype.h>
 #include <grp.h>
-#include <json-c/json.h>
 
 #include "s_config.h"
 
@@ -112,7 +111,9 @@ static inline enum nss_status g_search(const char *name, const gid_t gid, struct
         sprintf(_name, "%d", gid);
         redis_lookup("group",_name,gr_data); 
     }
-    json_object *jpwd = json_tokener_parse(gr_data);
+       
+    return NSS_STATUS_UNAVAIL;
+    /*
     if (jpwd == 0) {
         free(gr_data);
         return NSS_STATUS_UNAVAIL;
@@ -133,6 +134,7 @@ static inline enum nss_status g_search(const char *name, const gid_t gid, struct
 	gr->gr_gid = json_object_get_int(jobj);
     
     json_object_object_get_ex(jpwd, "members",&jobj);
+    */
     /*
 	int i;
     json_object *jmem;
@@ -143,7 +145,7 @@ static inline enum nss_status g_search(const char *name, const gid_t gid, struct
 	gr->gr_mem = NULL;
 	*/
 
-	free(jobj);
+	//free(jobj);
 	return NSS_STATUS_SUCCESS;
 }
 

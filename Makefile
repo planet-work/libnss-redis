@@ -7,14 +7,14 @@ BITSOFS=
 libprefix = ${exec_prefix}/lib$(BITSOFS)
 DESTDIR=
 OBJSUFFIX=$(BITSOFS).o
-OBJECTS=shadow$(OBJSUFFIX) passwd$(OBJSUFFIX) group$(OBJSUFFIX) redis_client$(OBJSUFFIX)  base64$(OBJSUFFIX) 
-SHARED_OBJECT = libnss_redis$(BITSOFS).so.2
-INSTALL_NAME = libnss_redis.so.2
+OBJECTS=shadow$(OBJSUFFIX) passwd$(OBJSUFFIX) group$(OBJSUFFIX) redis_client$(OBJSUFFIX) test$(OBJSUFFIX)
+SHARED_OBJECT = libnss_redis$(BITSOFS).so.1
+INSTALL_NAME = libnss_redis.so.1
 # This only works sometimes, give manually when needed:
 BIT_CFLAGS = $(if $(BITSOFS),-m$(BITSOFS))
-CFLAGS = $(BIT_CFLAGS) -g -O2 -Wall -Wstrict-prototypes -Wpointer-arith -Wmissing-prototypes
+CFLAGS = $(BIT_CFLAGS) -g -Wall -Wstrict-prototypes -Wpointer-arith -Wmissing-prototypes
 CPPFLAGS =
-LIBS = -lc -ljson-c
+LIBS = -lc -lhiredis
 LDLIBFLAGS = -shared -Wl,-soname,$(INSTALL_NAME)
 LDFLAGS = -Wl,-z,defs
 VERSION = unreleased
@@ -34,6 +34,8 @@ install:
 clean:
 	rm -f $(OBJECTS)
 	rm -f $(SHARED_OBJECT)
+	rm -f a.out
+	rm -f test
 
 distclean: clean
 
@@ -41,6 +43,10 @@ dist: Makefile README s_config.h $(patsubst %$(OBJSUFFIX),%.c,$(OBJECTS))
 	mkdir libnss-redis-$(VERSION)
 	install -m 644 $^ libnss-redis-$(VERSION)
 	tar -cvvzf libnss-redis_$(VERSION).orig.tar.gz libnss-redis-$(VERSION)
-	rm -r libnss-redis-$(VERSION)
+	rm -r libnss-redis-$(VERSION) 
+
+test: test.o redis_client.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o test redis_client$(OBJSUFFIX) test$(OBJSUFFIX) $(LIBS)
+
 
 .PHONY: all
