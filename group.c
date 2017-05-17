@@ -102,6 +102,7 @@ static inline enum nss_status g_search(const char *name, const gid_t gid, struct
 	char *token;
 	const char *delim = ":";
 	char *tenant = getenv("TENANT");
+	int res = 0;
 
 	if (tenant == NULL)
 		return NSS_STATUS_UNAVAIL; 
@@ -110,15 +111,21 @@ static inline enum nss_status g_search(const char *name, const gid_t gid, struct
 		*errnop = ENOENT;
 		return NSS_STATUS_NOTFOUND;
 	}
+
     if (gid == 0) {
-        redis_lookup("GROUP", tenant, name, gr_data);
+		if (name == NULL)
+		    return NSS_STATUS_UNAVAIL; 
+        res = redis_lookup("GROUP", tenant, name, gr_data);
     } else {
         char *_name = malloc(100);
         sprintf(_name, "%d", gid);
-        redis_lookup("GROUP", tenant, _name, gr_data); 
+        res = redis_lookup("GROUP", tenant, _name, gr_data); 
 		free(_name);
     }
        
+	if (res > 0)
+		return NSS_STATUS_NOTFOUND;
+	
 	*errnop = 0;
 
 	// gr_name : string

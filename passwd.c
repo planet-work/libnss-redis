@@ -27,19 +27,23 @@ static inline enum nss_status p_search(const char *name, const uid_t uid, struct
     char *token;
 	const char *delim = ":";
     char *tenant = getenv("TENANT");
+	int res = 0;
 
 	if (tenant == NULL)
 		return NSS_STATUS_UNAVAIL;
 
 
     if (uid == 0) {
-        redis_lookup("USER",tenant, name,pwd_data);
+        res = redis_lookup("USER",tenant, name,pwd_data);
     } else {
         char *_name = malloc(100);
         sprintf(_name, "%d", uid);
-        redis_lookup("USER",tenant, _name,pwd_data); 
+        res = redis_lookup("USER",tenant, _name,pwd_data); 
 		free(_name);
     }
+
+	if (res > 0)
+		return NSS_STATUS_NOTFOUND;
 
 	*errnop = 0;
 	// pw_name : string
@@ -95,7 +99,6 @@ enum nss_status _nss_redis_getpwnam_r(const char *name, struct passwd *result, c
 }
 
 enum nss_status _nss_redis_setpwent(void) {
-
 	return NSS_STATUS_SUCCESS;
 }
 

@@ -10,7 +10,7 @@ pipeline:
       - apt-get update >/dev/null
       - apt-get install -y -t jessie-backports cmake libhiredis-dev libhiredis-dbg valgrind redis-server  
       - sed -i -e "s/6379/6380/" /etc/redis/redis.conf
-      - systemctl restart redis-server
+      - /etc/init.d/redis-server start
       - redis-cli -p 6380 SET USER/tenant1/testuser "testuser:x:2000:1002:Web User:/home/testuser:/bin/false"
       - redis-cli -p 6380 SET USER/tenant1/2000 "testuser:x:2000:1002:Web User:/home/testuser:/bin/false"
       - redis-cli -p 6380 SET GROUP/tenant1/webusers "webusers:x:1002:www-data"
@@ -18,7 +18,7 @@ pipeline:
       - make
       - make test
       - valgrind ./test
-      #- debuild -uc -b
+      - debuild -uc -b
 
   pkg:
     image: appleboy/drone-scp
