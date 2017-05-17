@@ -1,5 +1,5 @@
 clone:
-      tags: true
+  tags: true
 
 build:
   bundle:
@@ -12,6 +12,7 @@ build:
       - make test
       - valgrind ./test
       - debuild -uc -b
+
 publish:
   sftp:
     host: pippin.planet-work.net

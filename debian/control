@@ -2,7 +2,7 @@ Source: libnss-redis
 Section: admin
 Priority: extra
 Maintainer: Frédéric VANNIÈRE <f.vanniere@planet-work.com>
-Build-Depends: debhelper (>= 7), dpkg-dev (>= 1.15.7~), libcurl4-openssl-dev,libjson-c-dev, libhiredis-dev
+Build-Depends: debhelper (>= 7), dpkg-dev (>= 1.15.7~), libjson-c-dev, libhiredis-dev
 Standards-Version: 3.9.3
 
 Package: libnss-redis
