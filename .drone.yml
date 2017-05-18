@@ -10,6 +10,7 @@ pipeline:
       - apt-get update >/dev/null
       - apt-get install -y -t jessie-backports cmake libhiredis-dev libhiredis-dbg valgrind redis-server  
       - sed -i -e "s/6379/6380/" /etc/redis/redis.conf
+      - sed -i -e "s/redis.sock/redis-webconf.sock/" /etc/redis/redis.conf
       - /etc/init.d/redis-server start
       - redis-cli -p 6380 SET USER/testuser "testuser:x:12345:54321:Web User:/home/testuser:/bin/false"
       - redis-cli -p 6380 SET USER/12345 "testuser:x:12345:54321:Web User:/home/testuser:/bin/false"
