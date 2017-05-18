@@ -11,7 +11,7 @@
 #include <errno.h>
 #include <ctype.h>
 
-#include "s_config.h"
+#include "config.h"
 #include "redis_client.h"
 
 enum nss_status _nss_redis_getpwuid_r(uid_t, struct passwd *, char *, size_t, int *);
@@ -26,12 +26,16 @@ static inline enum nss_status p_search(const char *name, const uid_t uid, struct
     char *pwd_data = buffer;
     char *token;
 	const char *delim = ":";
-    char *tenant = getenv("TENANT");
 	int res = 0;
+	char *tenant = NULL;
 
+#if USE_TENANT
+    tenant = getenv("TENANT");
 	if (tenant == NULL)
 		return NSS_STATUS_UNAVAIL;
+#endif
 
+	memset(pwd_data, 0, buflen);
 
     if (uid == 0) {
         res = redis_lookup("USER",tenant, name,pwd_data);
@@ -108,6 +112,8 @@ enum nss_status _nss_redis_endpwent(void) {
 
 enum nss_status _nss_redis_getpwent_r(struct passwd *pw, char *buffer, size_t buflen, int *errnop) {
 	*errnop = -1;
+    // not yet implemented
+	return NSS_STATUS_UNAVAIL;
 
 	if (pw == NULL)
 		return NSS_STATUS_UNAVAIL;

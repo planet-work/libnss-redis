@@ -11,14 +11,15 @@ pipeline:
       - apt-get install -y -t jessie-backports cmake libhiredis-dev libhiredis-dbg valgrind redis-server  
       - sed -i -e "s/6379/6380/" /etc/redis/redis.conf
       - /etc/init.d/redis-server start
-      - redis-cli -p 6380 SET USER/tenant1/testuser "testuser:x:2000:1002:Web User:/home/testuser:/bin/false"
-      - redis-cli -p 6380 SET USER/tenant1/2000 "testuser:x:2000:1002:Web User:/home/testuser:/bin/false"
-      - redis-cli -p 6380 SET GROUP/tenant1/webusers "webusers:x:1002:www-data"
-      - redis-cli -p 6380 SET GROUP/tenant1/1002 "webusers:x:1002:www-data"
+      - redis-cli -p 6380 SET USER/testuser "testuser:x:12345:54321:Web User:/home/testuser:/bin/false"
+      - redis-cli -p 6380 SET USER/12345 "testuser:x:12345:54321:Web User:/home/testuser:/bin/false"
+      - redis-cli -p 6380 SET GROUP/testgroup "testgroup:x:54321:www-data"
+      - redis-cli -p 6380 SET GROUP/54321 "testgroup:x:54321:www-data"
+      - redis-cli -p 6380 SET WEBHOST/website.com "website.com:www.website.com:testuser:/home/testuser/public_html/www/:/var/run/mysqld/mysql.sock:default:display_errors=1;magic_quotes_gpc=1;"
       - make
       - make test
       - valgrind ./test
-      - debuild -uc -b
+      - dpkg-buildpackage -b
 
   pkg:
     image: appleboy/drone-scp

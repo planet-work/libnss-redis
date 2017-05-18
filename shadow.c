@@ -29,7 +29,7 @@ Based on parts of the GNU C Library:
 #include <errno.h>
 #include <ctype.h>
 
-#include "s_config.h"
+#include "config.h"
 
 enum nss_status _nss_redis_getspent_r(struct spwd *, char *, size_t, int *);
 enum nss_status _nss_redis_getspnam_r(const char *, struct spwd *, char *, size_t, int *);

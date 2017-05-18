@@ -28,7 +28,7 @@ Based on parts of the GNU C Library:
 #include <ctype.h>
 #include <grp.h>
 
-#include "s_config.h"
+#include "config.h"
 #include "redis_client.h"
 
 enum nss_status _nss_redis_setgrent(void);
@@ -101,16 +101,22 @@ static inline enum nss_status g_search(const char *name, const gid_t gid, struct
 	char *gr_data = buffer;
 	char *token;
 	const char *delim = ":";
-	char *tenant = getenv("TENANT");
+	char *tenant = NULL;
 	int res = 0;
 
+#if USE_TENANT
+    tenant = getenv("TENANT");
 	if (tenant == NULL)
-		return NSS_STATUS_UNAVAIL; 
+		return NSS_STATUS_UNAVAIL;
+#endif
+
 
 	if (gid != 0 && gid < MINGID) {
 		*errnop = ENOENT;
 		return NSS_STATUS_NOTFOUND;
 	}
+
+	memset(gr_data, 0, buflen);
 
     if (gid == 0) {
 		if (name == NULL)
@@ -142,8 +148,13 @@ static inline enum nss_status g_search(const char *name, const gid_t gid, struct
     token = strtok(NULL, delim);
 	gr->gr_gid = atoi(token);
 
-	// gr_mem : ???
-	gr->gr_mem = NULL;
+	// gr_mem : list of strings
+    token = strtok(NULL, delim);
+	char **list = parse_list (token, token, buflen, errnop);
+	if (list)
+	    gr->gr_mem = list;
+	else
+    	gr->gr_mem = NULL;
 
 	return NSS_STATUS_SUCCESS;
 }
@@ -177,6 +188,10 @@ enum nss_status _nss_redis_getgrnam_r(const char *name, struct group *gr, char *
 enum nss_status _nss_redis_getgrgid_r(const gid_t gid, struct group *gr, char *buffer, size_t buflen, int *errnop) {
 	enum nss_status e;
 	*errnop = 0;
+	
+	// Not yet implemented
+	return NSS_STATUS_UNAVAIL;
+
 	if (gr == NULL)
 		return NSS_STATUS_UNAVAIL;
 	if (gid == 0 || gid < MINGID)
