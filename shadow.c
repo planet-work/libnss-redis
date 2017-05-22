@@ -72,11 +72,13 @@ enum nss_status _nss_redis_getspent_r(struct spwd *spw, char *buffer, size_t buf
 }
 
 static enum nss_status shadow_search(const char *name, struct spwd *spw, char *buffer, size_t buflen, int *errnop) {
-	char *t_namp, *t_pwdp;
-	long int t_lstchg, t_min, t_max, t_warn, t_inact, t_expire;
-	unsigned long int t_flag;
+	//char *t_namp, *t_pwdp;
+	//long int t_lstchg, t_min, t_max, t_warn, t_inact, t_expire;
+	//unsigned long int t_flag;
+	memset(buffer,0,buflen);
+	return NSS_STATUS_UNAVAIL;
+	/*
 	printf("=====> S_SEARCH %s",name); 
-			return NSS_STATUS_UNAVAIL;
 		*errnop = 0;
 		spw->sp_namp = t_namp;
 		spw->sp_pwdp = t_pwdp;
@@ -88,4 +90,5 @@ static enum nss_status shadow_search(const char *name, struct spwd *spw, char *b
 		spw->sp_expire = t_expire;
 		spw->sp_flag = t_flag;
 		return NSS_STATUS_SUCCESS;
+	*/
 }

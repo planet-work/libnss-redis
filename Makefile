@@ -9,7 +9,9 @@ OBJECTS=shadow.o passwd.o group.o webhost.o redis_client.o
 SHARED_OBJECT = libnss_redis$(BITSOFS).so.2
 INSTALL_NAME = libnss_redis.so.2
 # This only works sometimes, give manually when needed:
-CFLAGS = -g -Wall -Wstrict-prototypes -Wpointer-arith -Wmissing-prototypes
+CFLAGS = -g -Wall -Wstrict-prototypes -Wpointer-arith -Wmissing-prototypes  -D_FORTIFY_SOURCE=2\
+		 -fstack-protector-strong -Wformat -Werror=format-security -Wall \
+		 -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wpointer-arith -fPIC
 CPPFLAGS =
 LIBS = -lc -lhiredis
 LDLIBFLAGS = -shared -Wl,-soname,$(INSTALL_NAME)
