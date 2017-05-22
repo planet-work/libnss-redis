@@ -8,7 +8,7 @@ pipeline:
     commands:
       - echo "deb http://ftp.fr.debian.org/debian/ jessie-backports main" > /etc/apt/sources.list.d/backports.list
       - apt-get update >/dev/null
-      - apt-get install -y -t jessie-backports cmake libhiredis-dev libhiredis-dbg valgrind redis-server  
+      - apt-get install -y -t jessie-backports cmake libhiredis-dev libhiredis-dbg valgrind redis-server clang
       - sed -i -e "s/6379/6380/" /etc/redis/redis.conf
       - echo "unixsocket /var/run/redis/redis-webconf.sock" >> /etc/redis/redis.conf
       - /etc/init.d/redis-server start
@@ -17,8 +17,10 @@ pipeline:
       - redis-cli -p 6380 SET GROUP/testgroup "testgroup:x:54321:www-data"
       - redis-cli -p 6380 SET GROUP/54321 "testgroup:x:54321:www-data"
       - redis-cli -p 6380 SET WEBHOST/website.com "website.com:www.website.com:testuser:/home/testuser/public_html/www/:/var/run/mysqld/mysql.sock:default:display_errors=1;magic_quotes_gpc=1;"
+      - scan-build make
+      - scan-build make test
       - make
-      - make test
+      - make test 
       - valgrind ./test
       - dpkg-buildpackage -b
 
