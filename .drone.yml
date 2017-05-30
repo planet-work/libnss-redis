@@ -20,6 +20,24 @@ pipeline:
       - valgrind ./test
       - dpkg-buildpackage -b
 
+  pkg-testing:
+    image: appleboy/drone-scp
+    host: pippin.planet-work.net
+    username: pkg
+    source: ../*.deb
+    target: incoming-testing/libnss-redis/${DEBIAN_VERSION}
+    when:
+        event: push
+
+  aptly-testing:
+    image: appleboy/drone-ssh
+    host: pippin.planet-work.net
+    user: pkg
+    script:
+      - aptly repo add debian-${DEBIAN_VERSION}-testing incoming-testing/libnss-redis/${DEBIAN_VERSION} && aptly publish update ${DEBIAN_VERSION}-testing debian 
+    when:
+      event: push
+
   pkg:
     image: appleboy/drone-scp
     host: pippin.planet-work.net
@@ -28,6 +46,7 @@ pipeline:
     target: incoming/libnss-redis/${DEBIAN_VERSION}
     when:
         event: tag
+
 
   aptly:
     image: appleboy/drone-ssh
