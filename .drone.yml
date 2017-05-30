@@ -22,13 +22,14 @@ pipeline:
   testing-suffix:
     image: dock.pw.fr/pw/debpkg:${DEBIAN_VERSION}
     commands:
-      - dch -l ~build`date +"%y%m%d%H%M".` `git rev-parse HEAD | cut -c1-8`deb`lsb_release -r -s | cut -d'.' -f1`
+        - dch -l ~build`date +"%y%m%d%H%M"`deb`lsb_release -r -s | cut -d'.' -f1`u   `git rev-parse HEAD | cut -c1-8`
     when:
       event: push
 
   bundle:
     image: dock.pw.fr/pw/debpkg:${DEBIAN_VERSION}
     commands:
+      - apt-get install -y libhiredis-dev
       - dpkg-buildpackage -b
       - fakeroot debian/rules clean
 
@@ -47,7 +48,7 @@ pipeline:
     host: pippin.planet-work.net
     username: pkg
     script:
-      - aptly repo remove debian-${DEBIAN_VERSION}-testing `aptly repo search debian-${DEBIAN_VERSION}-testing 'Name (~ libnss-redis.*)' | xargs`
+      - aptly repo remove debian-${DEBIAN_VERSION}-testing `aptly repo search debian-${DEBIAN_VERSION}-testing 'Name (~ libnss-redis.*)' | xargs` || true
       - aptly repo add debian-${DEBIAN_VERSION}-testing incoming-testing/libnss-redis/${DEBIAN_VERSION} && aptly publish update ${DEBIAN_VERSION}-testing debian 
     secrets: [ PLUGIN_KEY ]
     when:
