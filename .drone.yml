@@ -26,6 +26,7 @@ pipeline:
     username: pkg
     source: ../*.deb
     target: incoming-testing/libnss-redis/${DEBIAN_VERSION}
+    secrets: [ PLUGIN_KEY ]
     when:
         event: push
 
@@ -34,7 +35,9 @@ pipeline:
     host: pippin.planet-work.net
     user: pkg
     script:
+      - aptly repo remove debian-${DEBIAN_VERSION}-testing `aptly repo search debian-${DEBIAN_VERSION}-testing 'Name (~ libnss-redis.*)' | xargs`
       - aptly repo add debian-${DEBIAN_VERSION}-testing incoming-testing/libnss-redis/${DEBIAN_VERSION} && aptly publish update ${DEBIAN_VERSION}-testing debian 
+    secrets: [ PLUGIN_KEY ]
     when:
       event: push
 
@@ -44,6 +47,7 @@ pipeline:
     username: pkg
     source: ../*.deb
     target: incoming/libnss-redis/${DEBIAN_VERSION}
+    secrets: [ PLUGIN_KEY ]
     when:
         event: tag
 
@@ -54,6 +58,7 @@ pipeline:
     user: pkg
     script:
       - aptly repo add debian-${DEBIAN_VERSION} incoming/libnss-redis/${DEBIAN_VERSION} && aptly publish update ${DEBIAN_VERSION} debian 
+    secrets: [ PLUGIN_KEY ]
     when:
       event: tag
 
