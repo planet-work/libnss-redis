@@ -1,6 +1,6 @@
 # Makefile for nss-redis
 
-CC = gcc  -fdiagnostics-color=auto
+CC = gcc 
 prefix = /usr
 exec_prefix = ${prefix}
 libprefix = ${exec_prefix}/lib
@@ -10,7 +10,7 @@ SHARED_OBJECT = libnss_redis$(BITSOFS).so.2
 INSTALL_NAME = libnss_redis.so.2
 # This only works sometimes, give manually when needed:
 CFLAGS = -g -Wall -Wstrict-prototypes -Wpointer-arith -Wmissing-prototypes  -D_FORTIFY_SOURCE=2\
-		 -fstack-protector-strong -Wformat -Werror=format-security -Wall \
+		 -Wformat -Werror=format-security -Wall \
 		 -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wpointer-arith -fPIC
 CPPFLAGS =
 LIBS = -lc -lhiredis

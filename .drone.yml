@@ -1,14 +1,10 @@
 pipeline:
-  clone:
-    image: plugins/git
-    tags: true
-
   build:
-    image: dock.pw.fr/pw/debpkg:jessie
+    image: dock.pw.fr/pw/debpkg:${DEBIAN_VERSION}
     commands:
-      - echo "deb http://ftp.fr.debian.org/debian/ jessie-backports main" > /etc/apt/sources.list.d/backports.list
+      - echo "deb http://ftp.fr.debian.org/debian/ ${DEBIAN_VERSION}-backports main" > /etc/apt/sources.list.d/backports.list
       - apt-get update >/dev/null
-      - apt-get install -y -t jessie-backports cmake libhiredis-dev libhiredis-dbg valgrind redis-server clang
+      - '[ "${DEBIAN_VERSION}" = "stretch" ] && apt-get install -y cmake libhiredis-dev libhiredis-dbg valgrind redis-server clang || apt-get install -y -t ${DEBIAN_VERSION}-backports cmake libhiredis-dev libhiredis-dbg valgrind redis-server clang'
       - sed -i -e "s/6379/6380/" /etc/redis/redis.conf
       - echo "unixsocket /var/run/redis/redis-webconf.sock" >> /etc/redis/redis.conf
       - /etc/init.d/redis-server start
@@ -29,7 +25,7 @@ pipeline:
     host: pippin.planet-work.net
     username: pkg
     source: ../*.deb
-    target: incoming/libnss-redis/jessie
+    target: incoming/libnss-redis/${DEBIAN_VERSION}
     when:
         event: tag
 
@@ -38,11 +34,13 @@ pipeline:
     host: pippin.planet-work.net
     user: pkg
     script:
-      - aptly repo add debian-jessie incoming/libnss-redis/jessie && aptly publish update jessie debian 
+      - aptly repo add debian-${DEBIAN_VERSION} incoming/libnss-redis/${DEBIAN_VERSION} && aptly publish update ${DEBIAN_VERSION} debian 
     when:
       event: tag
 
 matrix:
   DEBIAN_VERSION:
+    - wheezy
     - jessie
+    - stretch
 
