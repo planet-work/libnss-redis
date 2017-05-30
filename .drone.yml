@@ -7,7 +7,7 @@ pipeline:
       - '[ "${DEBIAN_VERSION}" = "stretch" ] && apt-get install -y cmake libhiredis-dev libhiredis-dbg valgrind redis-server clang || apt-get install -y -t ${DEBIAN_VERSION}-backports cmake libhiredis-dev libhiredis-dbg valgrind redis-server clang'
       - sed -i -e "s/6379/6380/" /etc/redis/redis.conf
       - echo "unixsocket /var/run/redis/redis-webconf.sock" >> /etc/redis/redis.conf
-      - /etc/init.d/redis-server start
+      - /etc/init.d/redis-server start && sleep 3
       - redis-cli -p 6380 SET USER/testuser "testuser:x:12345:54321:Web User:/home/testuser:/bin/false"
       - redis-cli -p 6380 SET USER/12345 "testuser:x:12345:54321:Web User:/home/testuser:/bin/false"
       - redis-cli -p 6380 SET GROUP/testgroup "testgroup:x:54321:www-data"
