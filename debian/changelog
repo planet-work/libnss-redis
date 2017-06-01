@@ -1,4 +1,4 @@
-libnss-redis (0.1-1~build1706010732deb8u1) UNRELEASED; urgency=medium
+libnss-redis (0.1-1) UNRELEASED; urgency=medium
 
   [ Frédéric VANNIÈRE ]
   * Bugfix 

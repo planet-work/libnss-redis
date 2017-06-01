@@ -2,6 +2,8 @@
 
 set -e
 
+echo "======= Runing functionnal tests ======"
+
 id testuser 
 id 12345
 id nonexistantuser || true
@@ -17,4 +19,7 @@ getent group 54321 | grep 54321
 getent group nonexistantgroup || true
 getent group 888888 || true
 
-exit 1
+echo "=== All tests passed ===="
+
+
+exit 0
