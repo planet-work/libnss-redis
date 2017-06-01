@@ -75,6 +75,23 @@ pipeline:
     when:
       event: tag
 
+  functional-tests:
+    image: dock.pw.fr/pw/debpkg:${DEBIAN_VERSION}
+    commands:
+      - echo "deb http://ftp.fr.debian.org/debian/ ${DEBIAN_VERSION}-backports main" > /etc/apt/sources.list.d/backports.list
+      - echo "deb [arch=amd64] http://pkg.planet-work.com/debian ${DEBIAN_VERSION}-testing main" > /etc/apt/sources.list.d/planet-work.list
+      - apt-get update >/dev/null
+      - '[ "${DEBIAN_VERSION}" = "stretch" ] && apt-get install -y redis-server || apt-get install -y -t ${DEBIAN_VERSION}-backports redis-server'
+      - sed -i -e "s/6379/6380/" /etc/redis/redis.conf
+      - echo "unixsocket /var/run/redis/redis-webconf.sock" >> /etc/redis/redis.conf
+      - /etc/init.d/redis-server start && sleep 3
+      - apt-get -y --allow-unauthenticated install libnss-redis
+      - sed -i -e "s/compat/compat redis/g" /etc/nsswitch.conf
+      - bash -x tests/setup-tests.sh
+      - bash -x tests/run-tests.sh
+    when:
+      local: true
+
 matrix:
   DEBIAN_VERSION:
     - wheezy

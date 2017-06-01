@@ -1,9 +1,12 @@
-libnss-redis (0.1-1) UNRELEASED; urgency=medium
+libnss-redis (0.1-1~build1706010732deb8u1) UNRELEASED; urgency=medium
 
   [ Frédéric VANNIÈRE ]
   * Bugfix 
 
- -- Frédéric VANNIÈRE <f.vanniere@planet-work.com>  Tue, 30 May 2017 15:27:53 +0200
+  [ root ]
+  * 88c13f49
+
+ -- root <root@200591939db7>  Thu, 01 Jun 2017 07:32:08 +0000
 
 libnss-redis (0.1-0) stable; urgency=low
 

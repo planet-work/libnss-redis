@@ -189,9 +189,6 @@ enum nss_status _nss_redis_getgrgid_r(const gid_t gid, struct group *gr, char *b
 	enum nss_status e;
 	*errnop = 0;
 	
-	// Not yet implemented
-	return NSS_STATUS_UNAVAIL;
-
 	if (gr == NULL)
 		return NSS_STATUS_UNAVAIL;
 	if (gid == 0 || gid < MINGID)
